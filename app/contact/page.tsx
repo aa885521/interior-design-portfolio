@@ -49,10 +49,10 @@ export default function ContactPage() {
             <section className="animate-reveal">
               <p className="text-[10px] uppercase tracking-[0.4em] opacity-30 mb-4">Contact</p>
               <h2 className="font-display text-5xl md:text-8xl font-light tracking-tight leading-[0.85] mb-12">
-                {contactContent.headline.split('\n')[0]}
+                {contactContent?.headline?.split('\n')[0] || "Let's"}
                 <br />
                 <span className="italic pl-16 md:pl-32 opacity-70">
-                  {contactContent.headline.split('\n')[1] || 'your vision'}
+                  {contactContent?.headline?.split('\n')[1] || 'collaborate'}
                 </span>
               </h2>
               <p className="text-base font-light leading-relaxed opacity-40 max-w-sm tracking-wide mb-16">

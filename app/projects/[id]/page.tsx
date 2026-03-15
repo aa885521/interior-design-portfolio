@@ -48,10 +48,10 @@ export default function ProjectDetail() {
           <div className="absolute bottom-[10vh] left-0 w-full p-[clamp(24px,4vw,48px)] z-20 animate-reveal">
             <p className="text-[10px] uppercase tracking-[0.4em] opacity-40 mb-4">{project.category} · {project.year}</p>
             <h1 className="font-display text-6xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.8] mb-6">
-              {project.title.split(' ')[0]}
+              {project?.title?.split(' ')[0] || 'Project'}
               <br />
               <span className="italic opacity-80 pl-12 md:pl-24">
-                {project.title.split(' ').slice(1).join(' ')}
+                {project?.title?.includes(' ') ? project.title.split(' ').slice(1).join(' ') : ''}
               </span>
             </h1>
           </div>

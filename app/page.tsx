@@ -40,9 +40,9 @@ export default function Home() {
           <header className="flex justify-between items-start pointer-events-auto mix-blend-difference animate-reveal">
             <Link href="/" className="group">
               <h1 className="font-display text-2xl md:text-3xl font-light tracking-[0.15em] uppercase leading-tight">
-                {settings.siteName.includes(' ') ? settings.siteName.split(' ')[0] : settings.siteName}
+                {settings?.siteName?.includes(' ') ? settings.siteName.split(' ')[0] : (settings?.siteName || 'Studio Design')}
                 <span className="block text-xs md:text-sm font-body font-light tracking-[0.3em] opacity-50 mt-1">
-                  {settings.siteName.includes(' ') ? settings.siteName.split(' ').slice(1).join(' ') : (settings.siteTagline || 'Design')}
+                  {settings?.siteName?.includes(' ') ? settings.siteName.split(' ').slice(1).join(' ') : (settings?.siteTagline || 'Design')}
                 </span>
               </h1>
             </Link>
