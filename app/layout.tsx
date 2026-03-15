@@ -1,19 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import fs from 'fs';
-import path from 'path';
-
-function getTypography() {
-  const DATA_PATH = path.join(process.cwd(), 'data', 'site-data.json');
-  try {
-    const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-    const data = JSON.parse(raw);
-    const activeId = data.siteSettings.typography?.activeConcept || 'classic';
-    return data.siteSettings.typography?.concepts.find((c: any) => c.id === activeId) || data.siteSettings.typography?.concepts[0];
-  } catch (e) {
-    return null;
-  }
-}
 
 export const metadata: Metadata = {
   title: 'Studio Design | Architectural Visualization',
@@ -21,13 +7,32 @@ export const metadata: Metadata = {
   keywords: ['interior design', 'architectural visualization', '3D rendering', 'portfolio'],
 };
 
-export default function RootLayout({
+// Fetch typography settings from API at build/request time
+async function getTypography() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/settings`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const activeId = data.typography?.activeConcept || 'classic';
+    return data.typography?.concepts?.find((c: any) => c.id === activeId) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const typography = getTypography();
-  const googleFontsUrl = typography ? `https://fonts.googleapis.com/css2?${typography.googleFonts}&display=swap` : "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap";
+  const typography = await getTypography();
+  const defaultFontsUrl = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&family=Noto+Serif+TC:wght@300;500&family=Noto+Sans+TC:wght@300;400&display=swap";
+  const googleFontsUrl = typography?.googleFonts 
+    ? `https://fonts.googleapis.com/css2?${typography.googleFonts}&display=swap` 
+    : defaultFontsUrl;
 
   return (
     <html lang="en">

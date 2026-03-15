@@ -1,74 +1,59 @@
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc } from 'firebase/firestore';
+
 export const dynamic = 'force-dynamic';
-import fs from 'fs';
-import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'site-data.json');
-
-function readData() {
-  const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-  return JSON.parse(raw);
-}
-
-function writeData(data: any) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// GET: return projects
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  const data = readData();
-  
-  if (id) {
-    const project = data.projects.find((p: any) => p.id === id);
-    if (!project) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(project);
+export async function GET() {
+  try {
+    const snap = await getDocs(collection(db, 'projects'));
+    const projects: any[] = [];
+    snap.forEach((doc) => {
+      projects.push({ id: doc.id, ...doc.data() });
+    });
+    // Sort by year descending
+    projects.sort((a, b) => (b.year || '0').localeCompare(a.year || '0'));
+    return NextResponse.json(projects);
+  } catch (error) {
+    console.error('Projects GET error:', error);
+    return NextResponse.json([], { status: 500 });
   }
-  
-  return NextResponse.json(data.projects);
 }
 
-// POST: add a new project
 export async function POST(request: Request) {
-  const body = await request.json();
-  const data = readData();
-  const newId = String(Date.now());
-  const newProject = {
-    id: newId,
-    title: body.title || 'Untitled Project',
-    subtitle: body.subtitle || '',
-    category: body.category || 'Residential',
-    year: body.year || new Date().getFullYear().toString(),
-    description: body.description || '',
-    coverImage: body.coverImage || '',
-    gallery: body.gallery || [],
-    meta: body.meta || { location: '', scope: '', software: '' },
-  };
-  data.projects.push(newProject);
-  writeData(data);
-  return NextResponse.json({ success: true, project: newProject });
-}
-
-// PUT: update a project
-export async function PUT(request: Request) {
-  const body = await request.json();
-  const data = readData();
-  const index = data.projects.findIndex((p: any) => p.id === body.id);
-  if (index === -1) {
-    return NextResponse.json({ success: false, message: 'Project not found' }, { status: 404 });
+  try {
+    const body = await request.json();
+    const { id, ...data } = body;
+    const ref = await addDoc(collection(db, 'projects'), data);
+    return NextResponse.json({ success: true, id: ref.id });
+  } catch (error) {
+    console.error('Projects POST error:', error);
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
   }
-  data.projects[index] = { ...data.projects[index], ...body };
-  writeData(data);
-  return NextResponse.json({ success: true, project: data.projects[index] });
 }
 
-// DELETE: delete a project
+export async function PUT(request: Request) {
+  try {
+    const body = await request.json();
+    const { id, ...data } = body;
+    if (!id) return NextResponse.json({ error: 'Missing project id' }, { status: 400 });
+    await setDoc(doc(db, 'projects', id), data, { merge: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Projects PUT error:', error);
+    return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+  }
+}
+
 export async function DELETE(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-  const data = readData();
-  data.projects = data.projects.filter((p: any) => p.id !== id);
-  writeData(data);
-  return NextResponse.json({ success: true });
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    await deleteDoc(doc(db, 'projects', id));
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Projects DELETE error:', error);
+    return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+  }
 }

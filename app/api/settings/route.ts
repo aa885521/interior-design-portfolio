@@ -1,30 +1,39 @@
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 export const dynamic = 'force-dynamic';
-import fs from 'fs';
-import path from 'path';
 
-const DATA_PATH = path.join(process.cwd(), 'data', 'site-data.json');
+const SETTINGS_DOC = 'siteData/settings';
 
-function readData() {
-  const raw = fs.readFileSync(DATA_PATH, 'utf-8');
-  return JSON.parse(raw);
-}
-
-function writeData(data: any) {
-  fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// GET: return site settings
 export async function GET() {
-  const data = readData();
-  return NextResponse.json(data.siteSettings);
+  try {
+    const snap = await getDoc(doc(db, 'siteData', 'settings'));
+    if (snap.exists()) {
+      return NextResponse.json(snap.data());
+    }
+    // Return defaults if no data in Firestore yet
+    return NextResponse.json({
+      siteName: 'Studio Design',
+      siteTagline: 'Architectural Visualization',
+      heroTitle: 'Shaping\nReality\nThrough Light',
+      heroSubtitle: 'Architectural visualization that transforms imagination into photorealistic immersive experiences.',
+      scrollHint: 'Scroll to explore spaces ↓',
+      typography: { activeConcept: 'classic', concepts: [] }
+    });
+  } catch (error) {
+    console.error('Settings GET error:', error);
+    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+  }
 }
 
-// PUT: update site settings
 export async function PUT(request: Request) {
-  const body = await request.json();
-  const data = readData();
-  data.siteSettings = { ...data.siteSettings, ...body };
-  writeData(data);
-  return NextResponse.json({ success: true, data: data.siteSettings });
+  try {
+    const body = await request.json();
+    await setDoc(doc(db, 'siteData', 'settings'), body, { merge: true });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Settings PUT error:', error);
+    return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });
+  }
 }
