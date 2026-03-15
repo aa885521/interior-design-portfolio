@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import SmoothScroll from '@/components/dom/SmoothScroll';
 import Link from 'next/link';
+import Navbar from '@/components/dom/Navbar';
+
 
 export default function ContactPage() {
   const [data, setData] = useState<any>(null);
@@ -30,19 +32,7 @@ export default function ContactPage() {
         </div>
 
         <div className="relative z-10" style={{ padding: 'clamp(24px, 4vw, 48px)' }}>
-          <header className="flex justify-between items-start mb-32 animate-reveal">
-            <Link href="/" className="group">
-              <h1 className="font-display text-2xl font-light tracking-[0.15em] uppercase leading-tight">
-                Studio<span className="block text-xs font-body font-light tracking-[0.3em] opacity-50 mt-1">Design</span>
-              </h1>
-            </Link>
-            <nav className="flex items-center gap-8">
-              <Link href="/projects" className="text-[11px] font-light tracking-[0.2em] uppercase opacity-50 hover:opacity-100 transition-opacity">Works</Link>
-              <Link href="/services" className="text-[11px] font-light tracking-[0.2em] uppercase opacity-50 hover:opacity-100 transition-opacity">Services</Link>
-              <Link href="/about" className="text-[11px] font-light tracking-[0.2em] uppercase opacity-50 hover:opacity-100 transition-opacity">About</Link>
-              <Link href="/contact" className="text-[11px] font-light tracking-[0.2em] uppercase opacity-100 text-[var(--color-accent)]">Inquire</Link>
-            </nav>
-          </header>
+          <Navbar activeHref="/contact" />
 
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-24 py-12">
             

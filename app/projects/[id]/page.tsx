@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import SmoothScroll from '@/components/dom/SmoothScroll';
 import Link from 'next/link';
+import Navbar from '@/components/dom/Navbar';
+
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -36,13 +38,11 @@ export default function ProjectDetail() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent" />
           
-          <div className="absolute top-0 left-0 w-full p-[clamp(24px,4vw,48px)] flex justify-between items-start z-20">
+          <div className="absolute top-0 left-0 w-full p-[clamp(24px,4vw,48px)] z-20 flex justify-between items-start">
             <Link href="/projects" className="text-[11px] uppercase tracking-widest opacity-50 hover:opacity-100 transition-opacity">
               ← Back to list
             </Link>
-            <Link href="/" className="font-display text-2xl font-light tracking-widest uppercase">
-              Studio<span className="opacity-50">Design</span>
-            </Link>
+            <Navbar activeHref="" />
           </div>
 
           <div className="absolute bottom-[10vh] left-0 w-full p-[clamp(24px,4vw,48px)] z-20 animate-reveal">
