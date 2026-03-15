@@ -1,11 +1,30 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Studio Design | Architectural Visualization',
-  description: 'Award-winning architectural visualization studio. We craft immersive 3D renders that bring interior spaces to life with stunning realism.',
-  keywords: ['interior design', 'architectural visualization', '3D rendering', 'portfolio'],
-};
+async function getSiteSettings() {
+  try {
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/settings`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const siteName = settings?.siteName || 'Studio Design';
+  const tagline = settings?.siteTagline || 'Architectural Visualization';
+  const heroSubtitle = settings?.heroSubtitle || 'Award-winning architectural visualization studio.';
+  return {
+    title: `${siteName} | ${tagline}`,
+    description: heroSubtitle,
+    keywords: ['interior design', 'architectural visualization', '3D rendering', 'portfolio'],
+  };
+}
 
 // Fetch typography settings from API at build/request time
 async function getTypography() {

@@ -36,9 +36,9 @@ export default function ServicesPage() {
 
           <section className="max-w-3xl mb-24 animate-reveal animate-reveal-delay-1">
             <p className="text-[10px] uppercase tracking-[0.4em] opacity-30 mb-4">What We Offer</p>
-            <h2 className="font-display text-5xl md:text-7xl font-light tracking-wide mb-8">Services <span className="italic">&amp;</span> Pricing</h2>
+            <h2 className="font-display text-5xl md:text-7xl font-light tracking-wide mb-8">Services <span className="italic">&</span> Pricing</h2>
             <p className="text-base font-light leading-relaxed opacity-40 max-w-xl tracking-wide">
-              Each project receives our full creative attention. Choose a tier that fits your vision, or reach out for a bespoke solution.
+              {data?.servicesIntro || 'Each project receives our full creative attention. Choose a tier that fits your vision, or reach out for a bespoke solution.'}
             </p>
           </section>
 

@@ -63,6 +63,18 @@ export default function ServicesAdminPage() {
 
       <section className="mb-20">
         <h2 className="text-[10px] uppercase tracking-[0.4em] opacity-30 mb-8">Service Pricing Tiers</h2>
+        
+        <div className="mb-8 bg-[#1a1a1a] p-6 rounded-2xl border border-white/5 space-y-2">
+          <label className="text-[9px] uppercase tracking-widest opacity-30">Services Section Intro Text</label>
+          <textarea
+            rows={2}
+            value={data.servicesIntro || ''}
+            onChange={(e) => setData({...data, servicesIntro: e.target.value})}
+            className="w-full bg-transparent border-b border-white/10 py-2 text-sm opacity-70 focus:outline-none focus:border-[#c9a96e] resize-none"
+            placeholder="Each project receives our full creative attention..."
+          />
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-6">
           {data.services.map((service: any, idx: number) => (
             <div key={service.id} className="p-8 bg-[#1a1a1a] rounded-2xl border border-white/5 space-y-6">
@@ -105,6 +117,15 @@ export default function ServicesAdminPage() {
                   className="w-full bg-transparent border-b border-white/10 py-2 text-xs opacity-60 focus:outline-none focus:border-[#c9a96e] resize-none"
                 />
               </div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={!!service.featured}
+                  onChange={(e) => handleUpdateService(idx, 'featured', e.target.checked)}
+                  className="w-4 h-4 accent-[#c9a96e]"
+                />
+                <span className="text-[9px] uppercase tracking-widest opacity-50">Featured Plan (「Most Requested」標籤)</span>
+              </label>
             </div>
           ))}
         </div>
@@ -140,6 +161,49 @@ export default function ServicesAdminPage() {
                 onChange={(e) => setData({...data, aboutContent: {...data.aboutContent, descriptionRight: e.target.value}})}
                 className="w-full bg-transparent border-b border-white/10 py-2 text-xs opacity-60 focus:outline-none focus:border-[#c9a96e] resize-none"
               />
+            </div>
+            <div className="space-y-3">
+              <label className="text-[9px] uppercase tracking-widest opacity-30">Stats (數據 - label + value)</label>
+              {(data.aboutContent.stats || []).map((stat: any, i: number) => (
+                <div key={i} className="flex gap-4 items-center">
+                  <input
+                    type="text"
+                    value={stat.label}
+                    onChange={(e) => {
+                      const newStats = [...data.aboutContent.stats];
+                      newStats[i] = {...newStats[i], label: e.target.value};
+                      setData({...data, aboutContent: {...data.aboutContent, stats: newStats}});
+                    }}
+                    placeholder="Label (e.g. Projects)"
+                    className="flex-1 bg-transparent border-b border-white/10 py-2 text-xs opacity-60 focus:outline-none focus:border-[#c9a96e]"
+                  />
+                  <input
+                    type="text"
+                    value={stat.value}
+                    onChange={(e) => {
+                      const newStats = [...data.aboutContent.stats];
+                      newStats[i] = {...newStats[i], value: e.target.value};
+                      setData({...data, aboutContent: {...data.aboutContent, stats: newStats}});
+                    }}
+                    placeholder="Value (e.g. 120+)"
+                    className="w-32 bg-transparent border-b border-white/10 py-2 text-xs focus:outline-none focus:border-[#c9a96e]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newStats = [...data.aboutContent.stats];
+                      newStats.splice(i, 1);
+                      setData({...data, aboutContent: {...data.aboutContent, stats: newStats}});
+                    }}
+                    className="text-[10px] opacity-30 hover:opacity-100 hover:text-red-400 transition"
+                  >✕</button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setData({...data, aboutContent: {...data.aboutContent, stats: [...(data.aboutContent.stats || []), {label: '', value: ''}]}})}
+                className="text-[9px] uppercase tracking-widest opacity-30 hover:opacity-100 transition border border-white/10 px-4 py-2 rounded-lg"
+              >+ Add Stat</button>
             </div>
           </div>
         </section>
