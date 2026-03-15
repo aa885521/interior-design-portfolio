@@ -111,6 +111,36 @@ export default function SettingsPage() {
           />
         </div>
 
+        <div className="space-y-4 pt-6 border-t border-white/5">
+          <h2 className="text-[10px] uppercase tracking-[0.3em] opacity-30">Site Logo (Optional)</h2>
+          <div className="flex gap-6 items-start">
+            <input
+              type="text"
+              placeholder="Logo image URL"
+              value={settings.siteLogo || ''}
+              onChange={(e) => setSettings({...settings, siteLogo: e.target.value})}
+              className="flex-1 bg-transparent border-b border-white/10 py-3 text-sm focus:outline-none focus:border-[#c9a96e] transition-colors"
+            />
+            <div className="w-48">
+              <ImageUpload
+                onUploadSuccess={(url) => setSettings({...settings, siteLogo: url})}
+                label=""
+              />
+            </div>
+          </div>
+          {settings.siteLogo && (
+            <div className="flex items-center gap-4">
+              <img src={settings.siteLogo} alt="Site logo preview" className="h-12 object-contain rounded" />
+              <button
+                type="button"
+                onClick={() => setSettings({...settings, siteLogo: ''})}
+                className="text-[10px] uppercase tracking-widest opacity-30 hover:opacity-100 hover:text-red-400 transition"
+              >Remove</button>
+            </div>
+          )}
+        </div>
+
+
         {settings.typography && (
           <div className="space-y-6 pt-10 border-t border-white/5">
             <h2 className="text-[10px] uppercase tracking-[0.3em] opacity-30">Typography Design (排版設計)</h2>
