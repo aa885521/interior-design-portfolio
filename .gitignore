@@ -35,6 +35,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local uploads & data (Prevent accidental overwrites in Vercel)
+# local uploads (Vercel filesystem is read-only)
 /public/uploads
-/data/site-data.json
