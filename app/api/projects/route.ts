@@ -4,12 +4,25 @@ import { doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc } from 'fir
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    // If an ID is provided, return a single project document
+    if (id) {
+      const snap = await getDoc(doc(db, 'projects', id));
+      if (!snap.exists()) {
+        return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      }
+      return NextResponse.json({ id: snap.id, ...snap.data() });
+    }
+
+    // Otherwise return all projects
     const snap = await getDocs(collection(db, 'projects'));
     const projects: any[] = [];
-    snap.forEach((doc) => {
-      projects.push({ id: doc.id, ...doc.data() });
+    snap.forEach((d) => {
+      projects.push({ id: d.id, ...d.data() });
     });
     // Sort by year descending
     projects.sort((a, b) => (b.year || '0').localeCompare(a.year || '0'));
