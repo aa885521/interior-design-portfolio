@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Image as DreiImage } from '@react-three/drei';
 import * as THREE from 'three';
@@ -11,7 +11,17 @@ interface InteractiveImageProps {
   scale: [number, number];
 }
 
-export default function InteractiveImage({ url, position, scale }: InteractiveImageProps) {
+// Fallback mesh shown when image fails to load
+function ImagePlaceholder({ position, scale }: { position: [number, number, number]; scale: [number, number] }) {
+  return (
+    <mesh position={position}>
+      <planeGeometry args={[scale[0], scale[1]]} />
+      <meshBasicMaterial color="#1a1a1a" transparent opacity={0.3} />
+    </mesh>
+  );
+}
+
+function ImageMesh({ url, position, scale }: InteractiveImageProps) {
   const imageRef = useRef<any>(null);
   const [hovered, setHover] = useState(false);
 
@@ -57,3 +67,15 @@ export default function InteractiveImage({ url, position, scale }: InteractiveIm
     </group>
   );
 }
+
+export default function InteractiveImage({ url, position, scale }: InteractiveImageProps) {
+  // If no URL provided, show placeholder
+  if (!url) return <ImagePlaceholder position={position} scale={scale} />;
+
+  return (
+    <Suspense fallback={<ImagePlaceholder position={position} scale={scale} />}>
+      <ImageMesh url={url} position={position} scale={scale} />
+    </Suspense>
+  );
+}
+
