@@ -23,7 +23,15 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Settings GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    // Return defaults even on error to prevent frontend crash
+    return NextResponse.json({
+      siteName: 'Studio Design',
+      siteTagline: 'Architectural Visualization',
+      heroTitle: 'Shaping\nReality\nThrough Light',
+      heroSubtitle: 'Architectural visualization that transforms imagination into photorealistic immersive experiences.',
+      scrollHint: 'Scroll to explore spaces ↓',
+      typography: { activeConcept: 'classic', concepts: [] }
+    });
   }
 }
 
