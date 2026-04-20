@@ -29,10 +29,20 @@ export async function GET() {
       location: ''
     };
 
-    return NextResponse.json({ services, aboutContent, contactContent });
+    // Get servicesIntro
+    const siteDataSnap = await getDoc(doc(db, 'siteData', 'content'));
+    const servicesIntro = siteDataSnap.exists() ? siteDataSnap.data()?.servicesIntro || '' : '';
+
+    return NextResponse.json({ services, aboutContent, contactContent, servicesIntro });
   } catch (error) {
     console.error('Content GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch content' }, { status: 500 });
+    // Return safe fallback data instead of 500 — prevents frontend crash
+    return NextResponse.json({
+      services: [],
+      aboutContent: { headline: '', descriptionLeft: '', descriptionRight: '', stats: [] },
+      contactContent: { headline: '', description: '', email: '', location: '' },
+      servicesIntro: ''
+    });
   }
 }
 
@@ -56,6 +66,11 @@ export async function PUT(request: Request) {
     // Save contactContent
     if (body.contactContent) {
       await setDoc(doc(db, 'siteData', 'contactContent'), body.contactContent, { merge: true });
+    }
+
+    // Save servicesIntro
+    if (body.servicesIntro !== undefined) {
+      await setDoc(doc(db, 'siteData', 'content'), { servicesIntro: body.servicesIntro }, { merge: true });
     }
 
     return NextResponse.json({ success: true });

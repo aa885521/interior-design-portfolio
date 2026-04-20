@@ -16,12 +16,16 @@ export default function ContactPage() {
       .then(result => {
         setData(result);
         setLoading(false);
+      })
+      .catch(() => {
+        setData({ contactContent: { headline: '', description: '', email: '', location: '' } });
+        setLoading(false);
       });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-[#080808]" />;
 
-  const { contactContent } = data;
+  const contactContent = data?.contactContent || { headline: '', description: '', email: '', location: '' };
 
   return (
     <SmoothScroll>

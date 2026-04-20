@@ -16,12 +16,16 @@ export default function ServicesPage() {
       .then(result => {
         setData(result);
         setLoading(false);
+      })
+      .catch(() => {
+        setData({ services: [], servicesIntro: '' });
+        setLoading(false);
       });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-[#080808]" />;
 
-  const { services } = data;
+  const services: any[] = data?.services || [];
 
   return (
     <SmoothScroll>
@@ -61,7 +65,7 @@ export default function ServicesPage() {
                   {tier.description}
                 </p>
                 <ul className="space-y-4 mb-auto pb-12">
-                  {tier.features.map((feature: string, idx: number) => (
+                  {(tier.features || []).map((feature: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-3">
                       <span className="text-[var(--color-accent)] text-lg leading-none">+</span>
                       <span className="text-[11px] font-light tracking-wide opacity-50 leading-relaxed">{feature}</span>

@@ -16,12 +16,16 @@ export default function AboutPage() {
       .then(result => {
         setData(result);
         setLoading(false);
+      })
+      .catch(() => {
+        setData({ aboutContent: { headline: '', descriptionLeft: '', descriptionRight: '', stats: [] } });
+        setLoading(false);
       });
   }, []);
 
   if (loading) return <div className="min-h-screen bg-[#080808]" />;
 
-  const { aboutContent } = data;
+  const aboutContent = data?.aboutContent || { headline: '', descriptionLeft: '', descriptionRight: '', stats: [] };
 
   return (
     <SmoothScroll>
